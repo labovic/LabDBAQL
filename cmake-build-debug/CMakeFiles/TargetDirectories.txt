@@ -1,0 +1,6 @@
+/home/stele/CLionProjects/client_server/cmake-build-debug/CMakeFiles/FlexScannerTarget.dir
+/home/stele/CLionProjects/client_server/cmake-build-debug/CMakeFiles/bison_target.dir
+/home/stele/CLionProjects/client_server/cmake-build-debug/CMakeFiles/Client.dir
+/home/stele/CLionProjects/client_server/cmake-build-debug/CMakeFiles/Server.dir
+/home/stele/CLionProjects/client_server/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/stele/CLionProjects/client_server/cmake-build-debug/CMakeFiles/rebuild_cache.dir

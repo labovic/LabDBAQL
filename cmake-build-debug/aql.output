@@ -1,0 +1,1380 @@
+Grammar
+
+    0 $accept: input $end
+
+    1 input: ε
+    2      | input query SEMICOLON
+
+    3 query: create_table
+    4      | remove_table
+    5      | insert_records
+    6      | update_records
+    7      | remove_records
+    8      | return_records
+
+    9 create_table: CREATE TABLE STRING OCB columns CCB
+
+   10 columns: column
+   11        | column COMMA columns
+
+   12 column: STRING COLON INTEGER
+   13       | STRING COLON FLOAT
+   14       | STRING COLON BOOLEAN
+   15       | STRING COLON VARCHAR OB INTVAL CB
+
+   16 remove_table: REMOVE TABLE STRING
+
+   17 insert_records: INSERT OCB record_fields CCB IN STRING
+   18               | FOR STRING IN OSB records_fields CSB INSERT IN STRING
+
+   19 records_fields: OCB record_fields CCB
+   20               | OCB record_fields CCB COMMA records_fields
+
+   21 record_fields: record_field
+   22              | record_field COMMA record_fields
+
+   23 record_field: STRING COLON value
+
+   24 update_records: UPDATE WITH OCB record_fields CCB IN STRING
+   25               | loop filters UPDATE STRING WITH OCB record_fields CCB IN STRING
+
+   26 remove_records: REMOVE IN STRING
+   27               | loop filters REMOVE STRING IN STRING
+
+   28 return_records: loop RETURN STRING
+   29               | loop filters RETURN STRING
+   30               | loop RETURN OCB fields CCB
+   31               | loop filters RETURN OCB fields CCB
+   32               | loop loop join_condition RETURN STRING COMMA STRING
+   33               | loop loop join_condition filters RETURN STRING COMMA STRING
+   34               | loop loop join_condition RETURN OCB fields CCB
+   35               | loop loop join_condition filters RETURN OCB fields CCB
+
+   36 loop: FOR STRING IN STRING
+
+   37 filters: FILTER filter
+   38        | FILTER filter filters
+
+   39 filter: compare_operand CMP compare_operand
+   40       | compare_operand CMP compare_operand OP filter
+
+   41 join_condition: FILTER STRING DOT STRING EQUAL STRING DOT STRING
+
+   42 compare_operand: value
+   43                | column_name
+
+   44 column_name: STRING
+   45            | STRING DOT STRING
+
+   46 value: INTVAL
+   47      | FLOATVAL
+   48      | BOOLVAL
+   49      | QUOTE STRING QUOTE
+
+   50 fields: STRING
+   51       | STRING COMMA fields
+   52       | STRING DOT STRING
+   53       | STRING DOT STRING COMMA fields
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    CREATE (258) 9
+    REMOVE (259) 16 26 27
+    TABLE (260) 9 16
+    INSERT (261) 17 18
+    IN (262) 17 18 24 25 26 27 36
+    UPDATE (263) 24 25
+    WITH (264) 24 25
+    RETURN (265) 28 29 30 31 32 33 34 35
+    FOR (266) 18 36
+    FILTER (267) 37 38 41
+    INTEGER <type> (268) 12
+    FLOAT <type> (269) 13
+    BOOLEAN <type> (270) 14
+    VARCHAR <type> (271) 15
+    OP <op> (272) 40
+    CMP <cmp> (273) 39 40
+    INTVAL <intval> (274) 15 46
+    FLOATVAL <floatval> (275) 47
+    BOOLVAL <boolval> (276) 48
+    STRING <strval> (277) 9 12 13 14 15 16 17 18 23 24 25 26 27 28 29 32 33 36 41 44 45 49 50 51 52 53
+    COLON (278) 12 13 14 15 23
+    SEMICOLON (279) 2
+    COMMA (280) 11 20 22 32 33 51 53
+    OB (281) 15
+    CB (282) 15
+    OCB (283) 9 17 19 20 24 25 30 31 34 35
+    CCB (284) 9 17 19 20 24 25 30 31 34 35
+    OSB (285) 18
+    CSB (286) 18
+    DOT (287) 41 45 52 53
+    EQUAL (288) 41
+    QUOTE (289) 49
+
+
+Nonterminals, with rules where they appear
+
+    $accept (35)
+        on left: 0
+    input (36)
+        on left: 1 2
+        on right: 0 2
+    query <query> (37)
+        on left: 3 4 5 6 7 8
+        on right: 2
+    create_table <create_table> (38)
+        on left: 9
+        on right: 3
+    columns <column> (39)
+        on left: 10 11
+        on right: 9 11
+    column <column> (40)
+        on left: 12 13 14 15
+        on right: 10 11
+    remove_table <remove_table> (41)
+        on left: 16
+        on right: 4
+    insert_records <insert_records> (42)
+        on left: 17 18
+        on right: 5
+    records_fields <record_fields> (43)
+        on left: 19 20
+        on right: 18 20
+    record_fields <record_field> (44)
+        on left: 21 22
+        on right: 17 19 20 22 24 25
+    record_field <record_field> (45)
+        on left: 23
+        on right: 21 22
+    update_records <update_records> (46)
+        on left: 24 25
+        on right: 6
+    remove_records <remove_records> (47)
+        on left: 26 27
+        on right: 7
+    return_records <return_records> (48)
+        on left: 28 29 30 31 32 33 34 35
+        on right: 8
+    loop <loop> (49)
+        on left: 36
+        on right: 25 27 28 29 30 31 32 33 34 35
+    filters <filter> (50)
+        on left: 37 38
+        on right: 25 27 29 31 33 35 38
+    filter <comparison> (51)
+        on left: 39 40
+        on right: 37 38 40
+    join_condition <comparison> (52)
+        on left: 41
+        on right: 32 33 34 35
+    compare_operand <literal> (53)
+        on left: 42 43
+        on right: 39 40
+    column_name <literal> (54)
+        on left: 44 45
+        on right: 43
+    value <literal> (55)
+        on left: 46 47 48 49
+        on right: 23 42
+    fields <field> (56)
+        on left: 50 51 52 53
+        on right: 30 31 34 35 51 53
+
+
+State 0
+
+    0 $accept: • input $end
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 1
+
+
+State 1
+
+    0 $accept: input • $end
+    2 input: input • query SEMICOLON
+
+    $end    shift, and go to state 2
+    CREATE  shift, and go to state 3
+    REMOVE  shift, and go to state 4
+    INSERT  shift, and go to state 5
+    UPDATE  shift, and go to state 6
+    FOR     shift, and go to state 7
+
+    query           go to state 8
+    create_table    go to state 9
+    remove_table    go to state 10
+    insert_records  go to state 11
+    update_records  go to state 12
+    remove_records  go to state 13
+    return_records  go to state 14
+    loop            go to state 15
+
+
+State 2
+
+    0 $accept: input $end •
+
+    $default  accept
+
+
+State 3
+
+    9 create_table: CREATE • TABLE STRING OCB columns CCB
+
+    TABLE  shift, and go to state 16
+
+
+State 4
+
+   16 remove_table: REMOVE • TABLE STRING
+   26 remove_records: REMOVE • IN STRING
+
+    TABLE  shift, and go to state 17
+    IN     shift, and go to state 18
+
+
+State 5
+
+   17 insert_records: INSERT • OCB record_fields CCB IN STRING
+
+    OCB  shift, and go to state 19
+
+
+State 6
+
+   24 update_records: UPDATE • WITH OCB record_fields CCB IN STRING
+
+    WITH  shift, and go to state 20
+
+
+State 7
+
+   18 insert_records: FOR • STRING IN OSB records_fields CSB INSERT IN STRING
+   36 loop: FOR • STRING IN STRING
+
+    STRING  shift, and go to state 21
+
+
+State 8
+
+    2 input: input query • SEMICOLON
+
+    SEMICOLON  shift, and go to state 22
+
+
+State 9
+
+    3 query: create_table •
+
+    $default  reduce using rule 3 (query)
+
+
+State 10
+
+    4 query: remove_table •
+
+    $default  reduce using rule 4 (query)
+
+
+State 11
+
+    5 query: insert_records •
+
+    $default  reduce using rule 5 (query)
+
+
+State 12
+
+    6 query: update_records •
+
+    $default  reduce using rule 6 (query)
+
+
+State 13
+
+    7 query: remove_records •
+
+    $default  reduce using rule 7 (query)
+
+
+State 14
+
+    8 query: return_records •
+
+    $default  reduce using rule 8 (query)
+
+
+State 15
+
+   25 update_records: loop • filters UPDATE STRING WITH OCB record_fields CCB IN STRING
+   27 remove_records: loop • filters REMOVE STRING IN STRING
+   28 return_records: loop • RETURN STRING
+   29               | loop • filters RETURN STRING
+   30               | loop • RETURN OCB fields CCB
+   31               | loop • filters RETURN OCB fields CCB
+   32               | loop • loop join_condition RETURN STRING COMMA STRING
+   33               | loop • loop join_condition filters RETURN STRING COMMA STRING
+   34               | loop • loop join_condition RETURN OCB fields CCB
+   35               | loop • loop join_condition filters RETURN OCB fields CCB
+
+    RETURN  shift, and go to state 23
+    FOR     shift, and go to state 24
+    FILTER  shift, and go to state 25
+
+    loop     go to state 26
+    filters  go to state 27
+
+
+State 16
+
+    9 create_table: CREATE TABLE • STRING OCB columns CCB
+
+    STRING  shift, and go to state 28
+
+
+State 17
+
+   16 remove_table: REMOVE TABLE • STRING
+
+    STRING  shift, and go to state 29
+
+
+State 18
+
+   26 remove_records: REMOVE IN • STRING
+
+    STRING  shift, and go to state 30
+
+
+State 19
+
+   17 insert_records: INSERT OCB • record_fields CCB IN STRING
+
+    STRING  shift, and go to state 31
+
+    record_fields  go to state 32
+    record_field   go to state 33
+
+
+State 20
+
+   24 update_records: UPDATE WITH • OCB record_fields CCB IN STRING
+
+    OCB  shift, and go to state 34
+
+
+State 21
+
+   18 insert_records: FOR STRING • IN OSB records_fields CSB INSERT IN STRING
+   36 loop: FOR STRING • IN STRING
+
+    IN  shift, and go to state 35
+
+
+State 22
+
+    2 input: input query SEMICOLON •
+
+    $default  reduce using rule 2 (input)
+
+
+State 23
+
+   28 return_records: loop RETURN • STRING
+   30               | loop RETURN • OCB fields CCB
+
+    STRING  shift, and go to state 36
+    OCB     shift, and go to state 37
+
+
+State 24
+
+   36 loop: FOR • STRING IN STRING
+
+    STRING  shift, and go to state 38
+
+
+State 25
+
+   37 filters: FILTER • filter
+   38        | FILTER • filter filters
+
+    INTVAL    shift, and go to state 39
+    FLOATVAL  shift, and go to state 40
+    BOOLVAL   shift, and go to state 41
+    STRING    shift, and go to state 42
+    QUOTE     shift, and go to state 43
+
+    filter           go to state 44
+    compare_operand  go to state 45
+    column_name      go to state 46
+    value            go to state 47
+
+
+State 26
+
+   32 return_records: loop loop • join_condition RETURN STRING COMMA STRING
+   33               | loop loop • join_condition filters RETURN STRING COMMA STRING
+   34               | loop loop • join_condition RETURN OCB fields CCB
+   35               | loop loop • join_condition filters RETURN OCB fields CCB
+
+    FILTER  shift, and go to state 48
+
+    join_condition  go to state 49
+
+
+State 27
+
+   25 update_records: loop filters • UPDATE STRING WITH OCB record_fields CCB IN STRING
+   27 remove_records: loop filters • REMOVE STRING IN STRING
+   29 return_records: loop filters • RETURN STRING
+   31               | loop filters • RETURN OCB fields CCB
+
+    REMOVE  shift, and go to state 50
+    UPDATE  shift, and go to state 51
+    RETURN  shift, and go to state 52
+
+
+State 28
+
+    9 create_table: CREATE TABLE STRING • OCB columns CCB
+
+    OCB  shift, and go to state 53
+
+
+State 29
+
+   16 remove_table: REMOVE TABLE STRING •
+
+    $default  reduce using rule 16 (remove_table)
+
+
+State 30
+
+   26 remove_records: REMOVE IN STRING •
+
+    $default  reduce using rule 26 (remove_records)
+
+
+State 31
+
+   23 record_field: STRING • COLON value
+
+    COLON  shift, and go to state 54
+
+
+State 32
+
+   17 insert_records: INSERT OCB record_fields • CCB IN STRING
+
+    CCB  shift, and go to state 55
+
+
+State 33
+
+   21 record_fields: record_field •
+   22              | record_field • COMMA record_fields
+
+    COMMA  shift, and go to state 56
+
+    $default  reduce using rule 21 (record_fields)
+
+
+State 34
+
+   24 update_records: UPDATE WITH OCB • record_fields CCB IN STRING
+
+    STRING  shift, and go to state 31
+
+    record_fields  go to state 57
+    record_field   go to state 33
+
+
+State 35
+
+   18 insert_records: FOR STRING IN • OSB records_fields CSB INSERT IN STRING
+   36 loop: FOR STRING IN • STRING
+
+    STRING  shift, and go to state 58
+    OSB     shift, and go to state 59
+
+
+State 36
+
+   28 return_records: loop RETURN STRING •
+
+    $default  reduce using rule 28 (return_records)
+
+
+State 37
+
+   30 return_records: loop RETURN OCB • fields CCB
+
+    STRING  shift, and go to state 60
+
+    fields  go to state 61
+
+
+State 38
+
+   36 loop: FOR STRING • IN STRING
+
+    IN  shift, and go to state 62
+
+
+State 39
+
+   46 value: INTVAL •
+
+    $default  reduce using rule 46 (value)
+
+
+State 40
+
+   47 value: FLOATVAL •
+
+    $default  reduce using rule 47 (value)
+
+
+State 41
+
+   48 value: BOOLVAL •
+
+    $default  reduce using rule 48 (value)
+
+
+State 42
+
+   44 column_name: STRING •
+   45            | STRING • DOT STRING
+
+    DOT  shift, and go to state 63
+
+    $default  reduce using rule 44 (column_name)
+
+
+State 43
+
+   49 value: QUOTE • STRING QUOTE
+
+    STRING  shift, and go to state 64
+
+
+State 44
+
+   37 filters: FILTER filter •
+   38        | FILTER filter • filters
+
+    FILTER  shift, and go to state 25
+
+    $default  reduce using rule 37 (filters)
+
+    filters  go to state 65
+
+
+State 45
+
+   39 filter: compare_operand • CMP compare_operand
+   40       | compare_operand • CMP compare_operand OP filter
+
+    CMP  shift, and go to state 66
+
+
+State 46
+
+   43 compare_operand: column_name •
+
+    $default  reduce using rule 43 (compare_operand)
+
+
+State 47
+
+   42 compare_operand: value •
+
+    $default  reduce using rule 42 (compare_operand)
+
+
+State 48
+
+   41 join_condition: FILTER • STRING DOT STRING EQUAL STRING DOT STRING
+
+    STRING  shift, and go to state 67
+
+
+State 49
+
+   32 return_records: loop loop join_condition • RETURN STRING COMMA STRING
+   33               | loop loop join_condition • filters RETURN STRING COMMA STRING
+   34               | loop loop join_condition • RETURN OCB fields CCB
+   35               | loop loop join_condition • filters RETURN OCB fields CCB
+
+    RETURN  shift, and go to state 68
+    FILTER  shift, and go to state 25
+
+    filters  go to state 69
+
+
+State 50
+
+   27 remove_records: loop filters REMOVE • STRING IN STRING
+
+    STRING  shift, and go to state 70
+
+
+State 51
+
+   25 update_records: loop filters UPDATE • STRING WITH OCB record_fields CCB IN STRING
+
+    STRING  shift, and go to state 71
+
+
+State 52
+
+   29 return_records: loop filters RETURN • STRING
+   31               | loop filters RETURN • OCB fields CCB
+
+    STRING  shift, and go to state 72
+    OCB     shift, and go to state 73
+
+
+State 53
+
+    9 create_table: CREATE TABLE STRING OCB • columns CCB
+
+    STRING  shift, and go to state 74
+
+    columns  go to state 75
+    column   go to state 76
+
+
+State 54
+
+   23 record_field: STRING COLON • value
+
+    INTVAL    shift, and go to state 39
+    FLOATVAL  shift, and go to state 40
+    BOOLVAL   shift, and go to state 41
+    QUOTE     shift, and go to state 43
+
+    value  go to state 77
+
+
+State 55
+
+   17 insert_records: INSERT OCB record_fields CCB • IN STRING
+
+    IN  shift, and go to state 78
+
+
+State 56
+
+   22 record_fields: record_field COMMA • record_fields
+
+    STRING  shift, and go to state 31
+
+    record_fields  go to state 79
+    record_field   go to state 33
+
+
+State 57
+
+   24 update_records: UPDATE WITH OCB record_fields • CCB IN STRING
+
+    CCB  shift, and go to state 80
+
+
+State 58
+
+   36 loop: FOR STRING IN STRING •
+
+    $default  reduce using rule 36 (loop)
+
+
+State 59
+
+   18 insert_records: FOR STRING IN OSB • records_fields CSB INSERT IN STRING
+
+    OCB  shift, and go to state 81
+
+    records_fields  go to state 82
+
+
+State 60
+
+   50 fields: STRING •
+   51       | STRING • COMMA fields
+   52       | STRING • DOT STRING
+   53       | STRING • DOT STRING COMMA fields
+
+    COMMA  shift, and go to state 83
+    DOT    shift, and go to state 84
+
+    $default  reduce using rule 50 (fields)
+
+
+State 61
+
+   30 return_records: loop RETURN OCB fields • CCB
+
+    CCB  shift, and go to state 85
+
+
+State 62
+
+   36 loop: FOR STRING IN • STRING
+
+    STRING  shift, and go to state 58
+
+
+State 63
+
+   45 column_name: STRING DOT • STRING
+
+    STRING  shift, and go to state 86
+
+
+State 64
+
+   49 value: QUOTE STRING • QUOTE
+
+    QUOTE  shift, and go to state 87
+
+
+State 65
+
+   38 filters: FILTER filter filters •
+
+    $default  reduce using rule 38 (filters)
+
+
+State 66
+
+   39 filter: compare_operand CMP • compare_operand
+   40       | compare_operand CMP • compare_operand OP filter
+
+    INTVAL    shift, and go to state 39
+    FLOATVAL  shift, and go to state 40
+    BOOLVAL   shift, and go to state 41
+    STRING    shift, and go to state 42
+    QUOTE     shift, and go to state 43
+
+    compare_operand  go to state 88
+    column_name      go to state 46
+    value            go to state 47
+
+
+State 67
+
+   41 join_condition: FILTER STRING • DOT STRING EQUAL STRING DOT STRING
+
+    DOT  shift, and go to state 89
+
+
+State 68
+
+   32 return_records: loop loop join_condition RETURN • STRING COMMA STRING
+   34               | loop loop join_condition RETURN • OCB fields CCB
+
+    STRING  shift, and go to state 90
+    OCB     shift, and go to state 91
+
+
+State 69
+
+   33 return_records: loop loop join_condition filters • RETURN STRING COMMA STRING
+   35               | loop loop join_condition filters • RETURN OCB fields CCB
+
+    RETURN  shift, and go to state 92
+
+
+State 70
+
+   27 remove_records: loop filters REMOVE STRING • IN STRING
+
+    IN  shift, and go to state 93
+
+
+State 71
+
+   25 update_records: loop filters UPDATE STRING • WITH OCB record_fields CCB IN STRING
+
+    WITH  shift, and go to state 94
+
+
+State 72
+
+   29 return_records: loop filters RETURN STRING •
+
+    $default  reduce using rule 29 (return_records)
+
+
+State 73
+
+   31 return_records: loop filters RETURN OCB • fields CCB
+
+    STRING  shift, and go to state 60
+
+    fields  go to state 95
+
+
+State 74
+
+   12 column: STRING • COLON INTEGER
+   13       | STRING • COLON FLOAT
+   14       | STRING • COLON BOOLEAN
+   15       | STRING • COLON VARCHAR OB INTVAL CB
+
+    COLON  shift, and go to state 96
+
+
+State 75
+
+    9 create_table: CREATE TABLE STRING OCB columns • CCB
+
+    CCB  shift, and go to state 97
+
+
+State 76
+
+   10 columns: column •
+   11        | column • COMMA columns
+
+    COMMA  shift, and go to state 98
+
+    $default  reduce using rule 10 (columns)
+
+
+State 77
+
+   23 record_field: STRING COLON value •
+
+    $default  reduce using rule 23 (record_field)
+
+
+State 78
+
+   17 insert_records: INSERT OCB record_fields CCB IN • STRING
+
+    STRING  shift, and go to state 99
+
+
+State 79
+
+   22 record_fields: record_field COMMA record_fields •
+
+    $default  reduce using rule 22 (record_fields)
+
+
+State 80
+
+   24 update_records: UPDATE WITH OCB record_fields CCB • IN STRING
+
+    IN  shift, and go to state 100
+
+
+State 81
+
+   19 records_fields: OCB • record_fields CCB
+   20               | OCB • record_fields CCB COMMA records_fields
+
+    STRING  shift, and go to state 31
+
+    record_fields  go to state 101
+    record_field   go to state 33
+
+
+State 82
+
+   18 insert_records: FOR STRING IN OSB records_fields • CSB INSERT IN STRING
+
+    CSB  shift, and go to state 102
+
+
+State 83
+
+   51 fields: STRING COMMA • fields
+
+    STRING  shift, and go to state 60
+
+    fields  go to state 103
+
+
+State 84
+
+   52 fields: STRING DOT • STRING
+   53       | STRING DOT • STRING COMMA fields
+
+    STRING  shift, and go to state 104
+
+
+State 85
+
+   30 return_records: loop RETURN OCB fields CCB •
+
+    $default  reduce using rule 30 (return_records)
+
+
+State 86
+
+   45 column_name: STRING DOT STRING •
+
+    $default  reduce using rule 45 (column_name)
+
+
+State 87
+
+   49 value: QUOTE STRING QUOTE •
+
+    $default  reduce using rule 49 (value)
+
+
+State 88
+
+   39 filter: compare_operand CMP compare_operand •
+   40       | compare_operand CMP compare_operand • OP filter
+
+    OP  shift, and go to state 105
+
+    $default  reduce using rule 39 (filter)
+
+
+State 89
+
+   41 join_condition: FILTER STRING DOT • STRING EQUAL STRING DOT STRING
+
+    STRING  shift, and go to state 106
+
+
+State 90
+
+   32 return_records: loop loop join_condition RETURN STRING • COMMA STRING
+
+    COMMA  shift, and go to state 107
+
+
+State 91
+
+   34 return_records: loop loop join_condition RETURN OCB • fields CCB
+
+    STRING  shift, and go to state 60
+
+    fields  go to state 108
+
+
+State 92
+
+   33 return_records: loop loop join_condition filters RETURN • STRING COMMA STRING
+   35               | loop loop join_condition filters RETURN • OCB fields CCB
+
+    STRING  shift, and go to state 109
+    OCB     shift, and go to state 110
+
+
+State 93
+
+   27 remove_records: loop filters REMOVE STRING IN • STRING
+
+    STRING  shift, and go to state 111
+
+
+State 94
+
+   25 update_records: loop filters UPDATE STRING WITH • OCB record_fields CCB IN STRING
+
+    OCB  shift, and go to state 112
+
+
+State 95
+
+   31 return_records: loop filters RETURN OCB fields • CCB
+
+    CCB  shift, and go to state 113
+
+
+State 96
+
+   12 column: STRING COLON • INTEGER
+   13       | STRING COLON • FLOAT
+   14       | STRING COLON • BOOLEAN
+   15       | STRING COLON • VARCHAR OB INTVAL CB
+
+    INTEGER  shift, and go to state 114
+    FLOAT    shift, and go to state 115
+    BOOLEAN  shift, and go to state 116
+    VARCHAR  shift, and go to state 117
+
+
+State 97
+
+    9 create_table: CREATE TABLE STRING OCB columns CCB •
+
+    $default  reduce using rule 9 (create_table)
+
+
+State 98
+
+   11 columns: column COMMA • columns
+
+    STRING  shift, and go to state 74
+
+    columns  go to state 118
+    column   go to state 76
+
+
+State 99
+
+   17 insert_records: INSERT OCB record_fields CCB IN STRING •
+
+    $default  reduce using rule 17 (insert_records)
+
+
+State 100
+
+   24 update_records: UPDATE WITH OCB record_fields CCB IN • STRING
+
+    STRING  shift, and go to state 119
+
+
+State 101
+
+   19 records_fields: OCB record_fields • CCB
+   20               | OCB record_fields • CCB COMMA records_fields
+
+    CCB  shift, and go to state 120
+
+
+State 102
+
+   18 insert_records: FOR STRING IN OSB records_fields CSB • INSERT IN STRING
+
+    INSERT  shift, and go to state 121
+
+
+State 103
+
+   51 fields: STRING COMMA fields •
+
+    $default  reduce using rule 51 (fields)
+
+
+State 104
+
+   52 fields: STRING DOT STRING •
+   53       | STRING DOT STRING • COMMA fields
+
+    COMMA  shift, and go to state 122
+
+    $default  reduce using rule 52 (fields)
+
+
+State 105
+
+   40 filter: compare_operand CMP compare_operand OP • filter
+
+    INTVAL    shift, and go to state 39
+    FLOATVAL  shift, and go to state 40
+    BOOLVAL   shift, and go to state 41
+    STRING    shift, and go to state 42
+    QUOTE     shift, and go to state 43
+
+    filter           go to state 123
+    compare_operand  go to state 45
+    column_name      go to state 46
+    value            go to state 47
+
+
+State 106
+
+   41 join_condition: FILTER STRING DOT STRING • EQUAL STRING DOT STRING
+
+    EQUAL  shift, and go to state 124
+
+
+State 107
+
+   32 return_records: loop loop join_condition RETURN STRING COMMA • STRING
+
+    STRING  shift, and go to state 125
+
+
+State 108
+
+   34 return_records: loop loop join_condition RETURN OCB fields • CCB
+
+    CCB  shift, and go to state 126
+
+
+State 109
+
+   33 return_records: loop loop join_condition filters RETURN STRING • COMMA STRING
+
+    COMMA  shift, and go to state 127
+
+
+State 110
+
+   35 return_records: loop loop join_condition filters RETURN OCB • fields CCB
+
+    STRING  shift, and go to state 60
+
+    fields  go to state 128
+
+
+State 111
+
+   27 remove_records: loop filters REMOVE STRING IN STRING •
+
+    $default  reduce using rule 27 (remove_records)
+
+
+State 112
+
+   25 update_records: loop filters UPDATE STRING WITH OCB • record_fields CCB IN STRING
+
+    STRING  shift, and go to state 31
+
+    record_fields  go to state 129
+    record_field   go to state 33
+
+
+State 113
+
+   31 return_records: loop filters RETURN OCB fields CCB •
+
+    $default  reduce using rule 31 (return_records)
+
+
+State 114
+
+   12 column: STRING COLON INTEGER •
+
+    $default  reduce using rule 12 (column)
+
+
+State 115
+
+   13 column: STRING COLON FLOAT •
+
+    $default  reduce using rule 13 (column)
+
+
+State 116
+
+   14 column: STRING COLON BOOLEAN •
+
+    $default  reduce using rule 14 (column)
+
+
+State 117
+
+   15 column: STRING COLON VARCHAR • OB INTVAL CB
+
+    OB  shift, and go to state 130
+
+
+State 118
+
+   11 columns: column COMMA columns •
+
+    $default  reduce using rule 11 (columns)
+
+
+State 119
+
+   24 update_records: UPDATE WITH OCB record_fields CCB IN STRING •
+
+    $default  reduce using rule 24 (update_records)
+
+
+State 120
+
+   19 records_fields: OCB record_fields CCB •
+   20               | OCB record_fields CCB • COMMA records_fields
+
+    COMMA  shift, and go to state 131
+
+    $default  reduce using rule 19 (records_fields)
+
+
+State 121
+
+   18 insert_records: FOR STRING IN OSB records_fields CSB INSERT • IN STRING
+
+    IN  shift, and go to state 132
+
+
+State 122
+
+   53 fields: STRING DOT STRING COMMA • fields
+
+    STRING  shift, and go to state 60
+
+    fields  go to state 133
+
+
+State 123
+
+   40 filter: compare_operand CMP compare_operand OP filter •
+
+    $default  reduce using rule 40 (filter)
+
+
+State 124
+
+   41 join_condition: FILTER STRING DOT STRING EQUAL • STRING DOT STRING
+
+    STRING  shift, and go to state 134
+
+
+State 125
+
+   32 return_records: loop loop join_condition RETURN STRING COMMA STRING •
+
+    $default  reduce using rule 32 (return_records)
+
+
+State 126
+
+   34 return_records: loop loop join_condition RETURN OCB fields CCB •
+
+    $default  reduce using rule 34 (return_records)
+
+
+State 127
+
+   33 return_records: loop loop join_condition filters RETURN STRING COMMA • STRING
+
+    STRING  shift, and go to state 135
+
+
+State 128
+
+   35 return_records: loop loop join_condition filters RETURN OCB fields • CCB
+
+    CCB  shift, and go to state 136
+
+
+State 129
+
+   25 update_records: loop filters UPDATE STRING WITH OCB record_fields • CCB IN STRING
+
+    CCB  shift, and go to state 137
+
+
+State 130
+
+   15 column: STRING COLON VARCHAR OB • INTVAL CB
+
+    INTVAL  shift, and go to state 138
+
+
+State 131
+
+   20 records_fields: OCB record_fields CCB COMMA • records_fields
+
+    OCB  shift, and go to state 81
+
+    records_fields  go to state 139
+
+
+State 132
+
+   18 insert_records: FOR STRING IN OSB records_fields CSB INSERT IN • STRING
+
+    STRING  shift, and go to state 140
+
+
+State 133
+
+   53 fields: STRING DOT STRING COMMA fields •
+
+    $default  reduce using rule 53 (fields)
+
+
+State 134
+
+   41 join_condition: FILTER STRING DOT STRING EQUAL STRING • DOT STRING
+
+    DOT  shift, and go to state 141
+
+
+State 135
+
+   33 return_records: loop loop join_condition filters RETURN STRING COMMA STRING •
+
+    $default  reduce using rule 33 (return_records)
+
+
+State 136
+
+   35 return_records: loop loop join_condition filters RETURN OCB fields CCB •
+
+    $default  reduce using rule 35 (return_records)
+
+
+State 137
+
+   25 update_records: loop filters UPDATE STRING WITH OCB record_fields CCB • IN STRING
+
+    IN  shift, and go to state 142
+
+
+State 138
+
+   15 column: STRING COLON VARCHAR OB INTVAL • CB
+
+    CB  shift, and go to state 143
+
+
+State 139
+
+   20 records_fields: OCB record_fields CCB COMMA records_fields •
+
+    $default  reduce using rule 20 (records_fields)
+
+
+State 140
+
+   18 insert_records: FOR STRING IN OSB records_fields CSB INSERT IN STRING •
+
+    $default  reduce using rule 18 (insert_records)
+
+
+State 141
+
+   41 join_condition: FILTER STRING DOT STRING EQUAL STRING DOT • STRING
+
+    STRING  shift, and go to state 144
+
+
+State 142
+
+   25 update_records: loop filters UPDATE STRING WITH OCB record_fields CCB IN • STRING
+
+    STRING  shift, and go to state 145
+
+
+State 143
+
+   15 column: STRING COLON VARCHAR OB INTVAL CB •
+
+    $default  reduce using rule 15 (column)
+
+
+State 144
+
+   41 join_condition: FILTER STRING DOT STRING EQUAL STRING DOT STRING •
+
+    $default  reduce using rule 41 (join_condition)
+
+
+State 145
+
+   25 update_records: loop filters UPDATE STRING WITH OCB record_fields CCB IN STRING •
+
+    $default  reduce using rule 25 (update_records)

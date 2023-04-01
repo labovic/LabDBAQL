@@ -1,0 +1,96 @@
+// Table operations
+
+CREATE TABLE studs {id: INTEGER, name:VARCHAR(32), age: INTEGER, active: BOOLEAN};
+CREATE TABLE person {born: INTEGER, name:VARCHAR(64), movie_id: INTEGER};
+CREATE TABLE movie {id: INTEGER, name:VARCHAR(64)};
+REMOVE TABLE studs;
+////////////////////////////////////////////////
+
+
+// Inserts
+
+INSERT {id:5, name:'10_boxes_x_20_bags', age:15.0, activeStud: TRUE} IN studs;
+
+CREATE TABLE person {born: INTEGER, name:VARCHAR(64), movie_id: INTEGER};
+CREATE TABLE movie {id: INTEGER, name:VARCHAR(64)};=
+
+FOR x IN person
+    FOR y in movie
+        FILTER x.movie_id = y.id
+        RETURN {x.name, x.born};
+
+
+FOR stud IN
+[ {id:1, name:Stefan, age:22},
+  {id:2, name:Vasil, age:23},
+  {id:3, name:Vitali, age:18}
+  ] INSERT IN studs;
+
+// Updates
+
+UPDATE
+    WITH {id:1, name:Stefan, age:22}
+    IN studs;
+
+FOR stud IN studs
+    FILTER stud.id > 0 AND stud.id < 10
+    FILTER 15 > 0
+    UPDATE stud
+        WITH {id:1, name:Stefan, age:22}
+        IN studs;
+
+// Removals
+
+REMOVE IN studs;
+
+FOR stud in studs
+   FILTER stud.id > 0 AND stud.id < 10
+   FILTER stud.age < 20
+   REMOVE stud in studs;
+
+// Returns
+
+FOR row IN tb1 RETURN row;
+
+FOR stud IN studs RETURN stud;
+
+FOR stud IN studs FILTER id == 5 RETURN stud;
+
+FOR row IN tb1
+    FILTER 10 < 20
+    FILTER 15 < 20
+    FILTER 10 < 20
+    RETURN row;
+
+
+FOR stud IN studs
+    RETURN { id, age, name };
+
+FOR stud IN studs
+    FILTER id > 0 AND id < 10
+    FILTER age < 20
+    RETURN { id, age, name };
+
+// JOIN
+
+FOR stud IN studs
+    FOR prof IN profs
+        FILTER stud.id = prof.id
+        RETURN stud, prof;
+
+///////////////////////////////////////////////////////
+FOR stud IN studs
+    FOR prof IN profs
+        FILTER stud.id = prof.id
+        FILTER stud.id > 0 AND stud.id < 10
+        FILTER prof.age > 40
+        RETURN stud, prof;
+//////////////////////////////////////////////////////
+
+FOR x IN tb1
+    FOR y IN tb2
+        FILTER x.id = y.id
+        RETURN {x.id, x.name};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
